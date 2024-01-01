@@ -1,0 +1,104 @@
+plugins {
+    alias(libs.plugins.fabricLoom)
+}
+
+evaluationDependsOn(':xplat')
+
+loom {
+    // accessWidenerPath = file('src/main/resources/fabric.accesswidener')
+
+    runs {
+        client {
+            client()
+            ideConfigGenerated true
+            configName 'Fabric: Client'
+            runDir 'run/client'
+
+            // vmArg '-XX:+AllowEnhancedClassRedefinition'
+            // vmArg '-XX:+IgnoreUnrecognizedVMOptions'
+            // vmArg '-XX:+AllowRedefinitionToAddDeleteMethods'
+
+            /*afterEvaluate {
+                vmArg "-javaagent:${configurations.compileClasspath.find {it.name.contains("sponge-mixin")}}"
+            }*/
+        }
+    }
+
+    mods {
+        "${MOD_ID}" {
+            sourceSet sourceSets.main
+        }
+    }
+}
+
+repositories {
+    maven {
+        url 'https://maven.parchmentmc.org'
+    }
+    maven {
+        url 'https://maven.terraformersmc.com/releases'
+    }
+}
+
+dependencies {
+    minecraft libs.minecraft
+
+    mappings(loom.layered {
+        officialMojangMappings()
+        parchment libs.parchment
+    }
+    )
+
+    modImplementation libs.fabricLoader
+    modApi libs.fabricApi
+    compileOnly project(path: ':xplat', configuration: 'namedElements')
+    localRuntime libs.devlogin
+    modRuntimeOnly(libs.modmenu) {
+        transitive false
+    }
+    implementation libs.bundles.commonMissing
+}
+
+processResources {
+    var replacements = ['VERSION': project.version]
+    inputs.properties replacements
+
+    filesMatching(['fabric.mod.json']) {
+        expand replacements
+    }
+
+    exclude "$MOD_ID-common.accesswidener"
+
+    from project(':xplat').sourceSets.main.resources
+}
+
+compileJava {
+    exclude "$MOD_ID-common.accesswidener"
+    source project(':xplat').sourceSets.main.allSource
+}
+
+sourcesJar {
+    exclude "$MOD_ID-common.accesswidener"
+    from project(':xplat').sourceSets.main.allJava
+}
+
+collectJars {
+    def tasks = [remapJar, remapSourcesJar]
+    dependsOn tasks
+    from tasks
+}
+
+// publishing {
+//     publications {
+//         release(MavenPublication) {
+//             loom.disableDeprecatedPomGeneration(it)
+
+//             artifact remapJar
+//             artifact remapSourcesJar
+//         }
+//     }
+// }
+
+idea.module {
+    excludeDirs += [file('run')]
+}

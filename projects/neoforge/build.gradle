@@ -1,0 +1,82 @@
+plugins {
+    alias(libs.plugins.neoGradle)
+}
+
+evaluationDependsOn(':xplat')
+
+runs {
+    configureEach {
+        /*if(it.isClient || it.isServer)
+        {
+            jvmArguments.add('-XX:+AllowEnhancedClassRedefinition')
+            jvmArguments.add('-XX:+IgnoreUnrecognizedVMOptions')
+            jvmArguments.add('-XX:+AllowRedefinitionToAddDeleteMethods')
+        }*/
+
+        systemProperty 'forge.logging.markers', 'REGISTRIES'
+        systemProperty 'forge.logging.console.level', 'debug'
+
+        modSources.add(sourceSets.main)
+        shouldBuildAllProjects false
+    }
+
+    client {
+        workingDirectory file('run/client')
+        singleInstance false
+    }
+}
+
+minecraft.accessTransformers.file file('src/main/resources/META-INF/accesstransformer.cfg')
+
+subsystems {
+    parchment {
+        parchmentArtifact = "${libs.parchment.get()}:checked@zip"
+    }
+}
+
+dependencies {
+    implementation libs.neoforge
+    compileOnly project(path: ':xplat', configuration: 'namedElements')
+}
+
+processResources {
+    var replacements = ['VERSION': project.version]
+    inputs.properties replacements
+
+    filesMatching(['META-INF/mods.toml']) {
+        expand replacements
+    }
+
+    exclude "$MOD_ID-common.accesswidener"
+
+    from project(':xplat').sourceSets.main.resources
+}
+
+compileJava {
+    exclude "$MOD_ID-common.accesswidener"
+    source project(':xplat').sourceSets.main.allSource
+}
+
+sourcesJar {
+    exclude "$MOD_ID-common.accesswidener"
+    from project(':xplat').sourceSets.main.allJava
+}
+
+collectJars {
+    def tasks = [jar, sourcesJar]
+    dependsOn tasks
+    from tasks
+}
+
+// publishing {
+//     publications {
+//         release(MavenPublication) {
+//             artifact jar
+//             artifact sourcesJar
+//         }
+//     }
+// }
+
+idea.module {
+    excludeDirs += [file('run')]
+}

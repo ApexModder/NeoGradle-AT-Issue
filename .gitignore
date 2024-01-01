@@ -1,0 +1,31 @@
+# eclipse
+bin
+*.launch
+.settings
+.metadata
+.classpath
+.project
+eclipse
+
+# idea
+out
+*.ipr
+*.iws
+*.iml
+.idea
+
+# gradle
+build
+.gradle
+
+# other
+run
+
+# Ignore generated files
+**/generated/**
+/changelogs/*.md
+/changelogs/*.html
+/changelogs/*.txt
+
+# Ignore compiled jars
+jars

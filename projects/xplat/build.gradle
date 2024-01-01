@@ -1,0 +1,49 @@
+plugins {
+    alias(libs.plugins.fabricLoom)
+}
+
+loom {
+    // accessWidenerPath = file('src/main/resources/xplat.accesswidener')
+}
+
+repositories {
+    maven {
+        url 'https://maven.parchmentmc.org'
+    }
+    maven {
+        url 'https://repo.spongepowered.org/repository/maven-public'
+    }
+}
+
+dependencies {
+    minecraft libs.minecraft
+
+    mappings(loom.layered {
+        officialMojangMappings()
+        parchment libs.parchment
+    }
+    )
+
+    implementation libs.mixin
+    implementation libs.mixinExtrasCommon
+    annotationProcessor libs.mixinExtrasCommon
+
+    implementation libs.bundles.commonMissing
+}
+
+collectJars {
+    def tasks = [remapJar, remapSourcesJar]
+    dependsOn tasks
+    from tasks
+}
+
+// publishing {
+//     publications {
+//         release(MavenPublication) {
+//             loom.disableDeprecatedPomGeneration(it)
+
+//             artifact remapJar
+//             artifact remapSourcesJar
+//         }
+//     }
+// }

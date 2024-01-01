@@ -1,0 +1,36 @@
+[versions]
+    minecraft="1.20.4"
+    java="17"
+
+[libraries]
+    minecraft={ module="com.mojang:minecraft", version.ref="minecraft" }
+    mixin={ module="org.spongepowered:mixin", version="0.8.5" } # same version as fabric & neoforge
+    parchment={ module="org.parchmentmc.data:parchment-1.20.3", version="2023.12.31" }
+    fabricLoader= { module="net.fabricmc:fabric-loader", version="0.15.3" }
+    fabricApi= { module="net.fabricmc.fabric-api:fabric-api", version="0.92.0+1.20.4" }
+    neoforge={ module="net.neoforged:neoforge", version="20.4.63-beta" }
+
+    # match vanilla library versions
+    jsr305={ module="com.google.code.findbugs:jsr305", version="3.0.2" }
+    errorProne={ module="com.google.errorprone:error_prone_annotations", version="2.11.0" }
+
+    devlogin={ module="net.covers1624:DevLogin", version="0.1.+" }
+    modmenu={ module="com.terraformersmc:modmenu", version="9.0.0-pre.1" }
+
+    # latest version supported by both fabric & neoforge
+    # fabric ships 0.3.0
+    # neoforge ships 0.3.2
+    # 0.3.+ is backwards compatible down to 0.3.0
+    mixinExtrasCommon={ module="io.github.llamalad7:mixinextras-common", version="0.3.+" }
+
+[bundles]
+    commonMissing=[ "jsr305", "errorProne" ]
+
+[plugins]
+    ideaExt={ id="org.jetbrains.gradle.plugin.idea-ext", version="1.1.+" }
+
+    neoGradle={ id="net.neoforged.gradle.userdev", version="7.0.+" }
+    fabricLoom={ id="fabric-loom", version="1.4.+" }
+    # vanillaGradle={ id="org.spongepowered.gradle.vanilla", version="0.2.1-SNAPSHOT" }
+    # parchment={ id="org.parchmentmc.librarian.forgegradle", version="1.+" }
+    # mixinGradle={ id="org.spongepowered.mixin", version="0.7.+" }

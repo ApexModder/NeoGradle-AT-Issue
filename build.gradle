@@ -1,0 +1,119 @@
+plugins {
+    alias(libs.plugins.ideaExt)
+}
+
+def gitBranch = '20.4/dev'
+// 20.4/dev
+def gitCommitDistance = '0'
+// #
+// def gitBranch = "git rev-parse --abbrev-ref HEAD".execute().text.trim()
+// def gitCommitDistance = "git rev-list --count HEAD".execute().text.trim()
+def shortVersion = gitBranch.indexOf('/') != -1 ? gitBranch.substring(0, gitBranch.indexOf('/')) : gitBranch
+
+ext {
+    MOD_NAME = rootProject.name
+    // MOD_ID=MOD_NAME.toLowerCase()
+    MOD_ID = 'ng_at_issue'
+    MOD_VERSION_SHORT = shortVersion
+    MOD_VERSION = "$MOD_VERSION_SHORT.$gitCommitDistance"
+}
+
+allprojects {
+    tasks.register('collectJars', Copy) {
+        into rootProject.file('jars')
+    }
+}
+
+subprojects {
+    apply plugin: 'java-library'
+    apply plugin: 'idea'
+    apply plugin: 'maven-publish'
+
+    // group = "dev.apexstudios.$MOD_ID"
+    group = "dev.apexstudios.ngatissue"
+    base.archivesName = "$MOD_ID-${project.name}"
+    version = MOD_VERSION
+
+    sourceSets.test {
+        java.srcDirs = []
+        resources.srcDirs = []
+    }
+
+    repositories {
+        // mavenLocal()
+        maven {
+            url 'https://maven.covers1624.net/'
+        }
+    }
+
+    dependencies {
+
+    }
+
+    processResources {
+
+    }
+
+    java {
+        toolchain {
+            languageVersion.set(JavaLanguageVersion.of(libs.versions.java.get()))
+        }
+
+        withSourcesJar()
+    }
+
+    tasks.withType(JavaCompile).configureEach {
+        options.encoding = 'UTF-8'
+        options.release.set(JavaLanguageVersion.of(libs.versions.java.get()).asInt())
+
+        javaToolchains {
+            compilerFor {
+                languageVersion.set(JavaLanguageVersion.of(libs.versions.java.get()))
+            }
+        }
+    }
+
+    jar {
+        manifest {
+            attributes(['Specification-Title'     : MOD_ID,
+                        'Specification-Vendor'    : 'ApexStudios',
+                        'Specification-Version'   : project.version,
+
+                        'Implementation-Title'    : MOD_ID,
+                        'Implementation-Vendor'   : 'ApexStudios',
+                        'Implementation-Version'  : project.version,
+                        'Implementation-Timestamp': new Date().format("yyyy-HH-dd'T'HH:mm:ssZ")]
+            )
+        }
+    }
+
+    artifacts {
+        archives jar
+        archives sourcesJar
+    }
+
+    // publishing {
+    //     publications {
+    //         release(MavenPublication) {
+    //             groupId = project.group
+    //             artifactId = project.base.archivesName
+    //             version = project.version
+    //         }
+    //     }
+
+    //     repositories {
+    //         // mavenLocal()
+
+    //         if(providers.environmentVariable('MAVEN_PASSWORD').isPresent()) {
+    //             maven {
+    //                 url 'https://nexus.covers1624.net/repository/apex-releases/'
+
+    //                 credentials {
+    //                     username 'apex'
+    //                     password providers.environmentVariable('MAVEN_PASSWORD').get()
+    //                 }
+    //             }
+    //         }
+    //     }
+    // }
+}

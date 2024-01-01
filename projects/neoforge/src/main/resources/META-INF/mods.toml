@@ -1,0 +1,23 @@
+license = "AllRightsReserved"
+issueTrackerURL = "https://discord.apexstudios.dev/"
+modLoader = "javafml"
+loaderVersion = "[2,)"
+
+[[mods]]
+modId = "ng_at_issue"
+displayName = "NeoGradle-AT-Issue"
+version = "${VERSION}"
+description = "NeoGradle-AT-Issue"
+
+[[dependencies.ng_at_issue]]
+modId = "minecraft"
+versionRange = "[1.20.4,1.20.5)"
+type = "required"
+ordering = "NONE"
+side = "BOTH"
+[[dependencies.ng_at_issue]]
+modId = "neoforge"
+versionRange = "[20.4,20.5)"
+type = "required"
+ordering = "NONE"
+side = "BOTH"
